@@ -27,10 +27,11 @@ const httpClient = axios.create({
  * These endpoints will not include the Authorization header
  */
 const PUBLIC_ENDPOINTS = [
-  "/auth/login",
-  "/auth/register",
+  "/auth/login/public",       // was "/auth/login"
+  "/auth/register/public",    // was "/auth/register"
   "/companies/public",
   "/contacts/public",
+  "/csrf-token/public",       // add this too
 ];
 
 /**
@@ -76,9 +77,10 @@ httpClient.interceptors.request.use(
       // If CSRF token is not present in cookies, fetch it from the server
       if (!csrfToken) {
         try {
-          await axios.get(`${API_BASE_URL}/csrf-token`, {
-            withCredentials: true,
-          });
+            await axios.get(`${API_BASE_URL}/csrf-token/public`, {
+              withCredentials: true,
+              headers: { Accept: DEFAULT_ACCEPT_HEADER },
+            });
           csrfToken = Cookies.get("XSRF-TOKEN");
 
           if (!csrfToken) {
